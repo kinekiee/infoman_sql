@@ -134,15 +134,15 @@ CREATE TABLE loan_item (
         ON UPDATE CASCADE
 );
 
-INSERT INTO book (isbn, title, publisher) VALUES
-('978-0141441146', 'Noli Me Tangere',                        'Noli Me Tangere'),
-('978-0060883287', 'One Hundred Years of Solitude',          'One Hundred Years of Solitude'),
-('978-0439708180', 'Harry Potter and the Sorcerer''s Stone', 'Harry Potter and the Sorcerer''s Stone'),
-('978-9710943159', 'Cave and Shadows',                       'Cave and Shadows'),
-('978-0451524935', '1984',                                   '1984'),
-('978-9710945689', 'The Rosales Saga: Po-on',                'The Rosales Saga: Po-on'),
-('978-0307455925', 'Americanah',                             'Americanah'),
-('978-0198328322', 'Philippine History and Government',      'Philippine History and Government');
+INSERT INTO book (title, isbn, publisher) VALUES
+( 'Noli Me Tangere',                           '978-0141441146',                        'Noli Me Tangere'),
+( 'One Hundred Years of Solitude',             '978-0060883287',          'One Hundred Years of Solitude'),
+( 'Harry Potter and the Sorcerer''s Stone',    '978-0439708180', 'Harry Potter and the Sorcerer''s Stone'),
+( 'Cave and Shadows',                          '978-9710943159',                       'Cave and Shadows'),
+( '1984',                                      '978-0451524935',                                   '1984'),
+( 'The Rosales Saga: Po-on',                   '978-9710945689',                'The Rosales Saga: Po-on'),
+( 'Americanah',                                '978-0307455925',                             'Americanah'),
+( 'Philippine History and Government',         '978-0198328322',      'Philippine History and Government');
 
 INSERT INTO author (author_name, nationality, biography) VALUES
 ('Jose Rizal',                 'Filipino',    'National hero of the Philippines; novelist, poet, and polymath.'),
@@ -179,20 +179,31 @@ INSERT INTO branch (branch_name, address, phone) VALUES
 ('East End Library', '789 Pine Rd, Villagetown', '555-9012');
 
 INSERT INTO book_copy (book_id, branch_id, copy_condition) VALUES
-(1, 1, 'Good'),
-(1, 1, 'Fair'),
 (1, 1, 'New'),
-(2, 1, 'Good'),
-(2, 1, 'Good'),
-(3, 2, 'New'),
-(3, 2, 'Good'),
-(4, 2, 'Fair'),
+(1, 2, 'Good'),
+(1, 3, 'Fair'),
+(2, 1, 'New'),
+(2, 2, 'Good'),
+(2, 3, 'Fair'),
+(3, 1, 'New'),
+(3, 3, 'Good'),
+(4, 1, 'Fair'),
+(4, 2, 'New'),
+(4, 3, 'Good'),
+(4, 1, 'Fair'),
+(5, 1, 'New'),
 (5, 2, 'Good'),
-(5, 2, 'Good'),
-(6, 3, 'New'),
+(5, 2, 'Fair'),
+(6, 1, 'New'),
+(6, 2, 'Good'),
+(6, 3, 'Fair'),
+(6, 1, 'New'),
+(7, 1, 'Good'),
+(7, 2, 'Fair'),
 (7, 3, 'New'),
-(8, 3, 'New'),
-(8, 3, 'Good');
+(8, 2, 'Good'),
+(8, 3, 'Fair'),
+(8, 3, 'New');
 
 INSERT INTO staff (branch_id, staff_name, role) VALUES
 (1, 'Charles Penoliar', 'Librarian'),
@@ -232,11 +243,11 @@ INSERT INTO loan (member_id, loan_date, due_date) VALUES
 (6, '2024-08-18', '2024-09-01'),
 (7, '2024-08-20', '2024-09-03');
 
-INSERT INTO loan_item (loan_id, book_copy_id) VALUES
-(1, 1), (1, 2),
-(2, 3), (2, 4),
-(3, 5), (3, 6),
-(4, 7), (4, 8),
-(5, 9), (5, 10),
-(6, 11), (6, 12),
-(7, 12), (7, 13);
+INSERT INTO loan_item (loan_id, book_copy_id, return_date, status) VALUES
+(1, 1, NULL, 'Out'),
+(2, 2, NULL, 'Out'),
+(3, 3, NULL, 'Out'),
+(4, 4, NULL, 'Out'),
+(5, 5, NULL, 'Out'),
+(6, 6, NULL, 'Out'),
+(7, 7, NULL, 'Out');
