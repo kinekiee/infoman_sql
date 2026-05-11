@@ -46,11 +46,19 @@ CREATE TABLE book_genres (
         ON UPDATE CASCADE
 );
 
+CREATE TABLE branch (
+    branch_id       INT             NOT NULL AUTO_INCREMENT,
+    branch_name     VARCHAR(100)    NOT NULL,
+    address         VARCHAR(255)    NOT NULL,
+    phone           VARCHAR(20)     NOT NULL,
+    CONSTRAINT pk_branch PRIMARY KEY (branch_id)
+);
+
 CREATE TABLE book_copy (
     copy_id         INT             NOT NULL AUTO_INCREMENT,
     book_id         INT             NOT NULL,
     branch_id       INT             NOT NULL,
-    condition       ENUM('New','Good','Fair','Poor') NOT NULL DEFAULT 'Good',
+    copy_condition  ENUM('New','Good','Fair','Poor') NOT NULL DEFAULT 'Good',
     CONSTRAINT pk_book_copy         PRIMARY KEY (copy_id),
     CONSTRAINT fk_copy_book         FOREIGN KEY (book_id)
         REFERENCES book (book_id)
@@ -60,14 +68,6 @@ CREATE TABLE book_copy (
         REFERENCES branch (branch_id)
         ON DELETE RESTRICT
         ON UPDATE CASCADE
-);
-
-CREATE TABLE branch (
-    branch_id       INT             NOT NULL AUTO_INCREMENT,
-    branch_name     VARCHAR(100)    NOT NULL,
-    address         VARCHAR(255)    NOT NULL,
-    phone           VARCHAR(20)     NOT NULL,
-    CONSTRAINT pk_branch PRIMARY KEY (branch_id)
 );
 
 CREATE TABLE staff (
@@ -173,14 +173,19 @@ INSERT INTO book_genres (book_id, genre) VALUES
 (7, 'Contemporary Fiction'),(7, 'Social Commentary'),
 (8, 'Non-Fiction'),        (8, 'Academic');
 
-INSERT INTO book_copy (book_id, branch_id, condition) VALUES
+INSERT INTO branch (branch_name, address, phone) VALUES
+('Downtown Library', '123 Main St, Cityville', '555-1234'),
+('Northside Branch', '456 Oak Ave, Townsburg', '555-5678'),
+('East End Library', '789 Pine Rd, Villagetown', '555-9012');
+
+INSERT INTO book_copy (book_id, branch_id, copy_condition) VALUES
 (1, 1, 'Good'),
 (1, 1, 'Fair'),
 (1, 1, 'New'),
 (2, 1, 'Good'),
 (2, 1, 'Good'),
 (3, 2, 'New'),
-(3, 2, 'Good'), 
+(3, 2, 'Good'),
 (4, 2, 'Fair'),
 (5, 2, 'Good'),
 (5, 2, 'Good'),
@@ -188,11 +193,6 @@ INSERT INTO book_copy (book_id, branch_id, condition) VALUES
 (7, 3, 'New'),
 (8, 3, 'New'),
 (8, 3, 'Good');
-
-INSERT INTO branch (branch_name, address, phone) VALUES
-('Downtown Library', '123 Main St, Cityville', '555-1234'),
-('Northside Branch', '456 Oak Ave, Townsburg', '555-5678'),
-('East End Library', '789 Pine Rd, Villagetown', '555-9012');
 
 INSERT INTO staff (branch_id, staff_name, role) VALUES
 (1, 'Charles Penoliar', 'Librarian'),
