@@ -87,8 +87,6 @@ CREATE TABLE member (
     full_name       VARCHAR(120)    NOT NULL,
     date_of_birth   DATE            NOT NULL,
     email           VARCHAR(150)    NOT NULL UNIQUE,
-    -- age is a DERIVED ATTRIBUTE: use the expression below when querying
-    --   TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) AS age
     CONSTRAINT pk_member PRIMARY KEY (member_id)
 );
 
@@ -226,13 +224,13 @@ INSERT INTO member (full_name, date_of_birth, email) VALUES
 ('Padre Salvi', '1975-03-12', 'padre.salvi@example.com');
 
 INSERT INTO membership (member_id, start_date, expiry_date) VALUES
-(1, '2024-01-01', '2024-12-31'),
-(2, '2024-02-15', '2025-02-14'),
-(3, '2024-03-10', '2025-03-09'),
-(4, '2024-04-20', '2025-04-19'),
-(5, '2024-05-05', '2025-05-04'),
-(6, '2024-06-01', '2025-05-31'),
-(7, '2024-07-15', '2025-07-14');
+(1, '2024-12-31', '2024-01-01'),
+(2, '2025-02-14', '2024-02-15'),
+(3, '2025-03-09', '2024-03-10'),
+(4, '2025-04-19', '2024-04-20'),
+(5, '2025-05-04', '2024-05-05'),
+(6, '2025-05-31', '2024-06-01'),
+(7, '2025-07-14', '2024-07-15');
 
 INSERT INTO loan (member_id, loan_date, due_date) VALUES
 (1, '2024-08-01', '2024-08-15'),
@@ -244,10 +242,10 @@ INSERT INTO loan (member_id, loan_date, due_date) VALUES
 (7, '2024-08-20', '2024-09-03');
 
 INSERT INTO loan_item (loan_id, book_copy_id, return_date, status) VALUES
-(1, 1, NULL, 'Out'),
-(2, 2, NULL, 'Out'),
-(3, 3, NULL, 'Out'),
-(4, 4, NULL, 'Out'),
-(5, 5, NULL, 'Out'),
-(6, 6, NULL, 'Out'),
-(7, 7, NULL, 'Out');
+(1, 1, NULL, 'On loan'),
+(2, 2, NULL, 'Returned'),
+(3, 3, NULL, 'On loan'),
+(4, 4, '2024-08-26', 'Overdue'),
+(5, 5, NULL, 'Returned'),
+(6, 6, '2024-09-01', 'Overdue'),
+(7, 7, NULL, 'On loan');
