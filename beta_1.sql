@@ -242,10 +242,10 @@ INSERT INTO loan (member_id, loan_date, due_date) VALUES
 (7, '2024-08-20', '2024-09-03');
 
 INSERT INTO loan_item (loan_id, book_copy_id, return_date, status) VALUES
-(1, 1, NULL, 'On loan'),
-(2, 2, NULL, 'Returned'),
-(3, 3, NULL, 'On loan'),
+(1, 1, '2024-08-01', 'On loan'),
+(2, 2, '2024-08-13', 'Returned'),
+(3, 3, '2024-08-10', 'On loan'),
 (4, 4, '2024-08-26', 'Overdue'),
-(5, 5, NULL, 'Returned'),
+(5, 5, '2024-08-15', 'Returned'),
 (6, 6, '2024-09-01', 'Overdue'),
-(7, 7, NULL, 'On loan');
+(7, 7, '2024-08-20', 'On loan');
