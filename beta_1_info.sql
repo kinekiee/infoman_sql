@@ -1,0 +1,145 @@
+-- ============================================================
+--  Library Management System — SQL DDL Script
+--  Derived from Entity-Relationship Diagram (Crow's Foot notation)
+--  8 Entities | 6 Named Relationships | Referential Integrity
+-- ============================================================
+--
+--  ENTITY OVERVIEW
+--  ───────────────
+--  1. BOOK           — catalogue record of a title
+--  2. AUTHOR         — person who wrote one or more books
+--  3. BRANCH         — library branch location
+--  4. BOOK_COPY      — physical copy of a book held at a branch
+--  5. STAFF          — employees assigned to a branch
+--  6. MEMBER         — registered library patrons
+--  7. MEMBERSHIP     — (1:1 with MEMBER) active membership card/plan
+--  8. LOAN           — a borrowing transaction per member
+--  9. LOAN_ITEM      — *** WEAK ENTITY *** line items of a loan
+--
+--  RELATIONSHIPS
+--  ─────────────
+--  R1. MEMBER    holds      MEMBERSHIP   (1:1,  MEMBER total, MEMBERSHIP total)
+--  R2. MEMBER    makes      LOAN         (1:N,  MEMBER partial, LOAN total)
+--  R3. LOAN      contains   LOAN_ITEM    (1:N,  LOAN total, LOAN_ITEM total)  ← weak entity
+--  R4. LOAN_ITEM references BOOK_COPY    (N:1,  LOAN_ITEM total, BOOK_COPY partial)
+--  R5. BOOK_COPY held at    BRANCH       (N:1,  BOOK_COPY total, BRANCH partial)
+--  R6. BRANCH    employs    STAFF        (1:N,  BRANCH total, STAFF total)
+--
+--  ADDITIONAL (supporting M:N and FK integrity)
+--  BOOK     is copy of  BOOK_COPY    (1:N via FK)
+--  BOOK     written by  AUTHOR       (M:N resolved via BOOK_AUTHOR bridge)
+--
+--  SPECIAL ATTRIBUTES
+--  ──────────────────
+--  Multivalued : BOOK.genres  → stored in BOOK_GENRES table
+--  Derived     : MEMBER.age   → computed from date_of_birth using SQL expression
+--                               (not a stored column; computed at query time)
+-- ============================================================
+--  ENTITY 5 — BOOK
+--  Attributes: book_id (PK), title, isbn, publisher
+--  Multivalued attribute: genres → stored in BOOK_GENRES table
+-- ============================================================
+--
+-- ============================================================
+--  ENTITY 7 — AUTHOR
+--  Attributes: author_id (PK), author_name, nationality, bio
+-- ============================================================
+--
+-- ============================================================
+--  BOOK_AUTHOR — Bridge table resolving M:N between BOOK and AUTHOR
+--  Relationship: BOOK written by AUTHOR (M:N)
+-- ============================================================
+--
+-- ============================================================
+--  BOOK_GENRES — Multivalued attribute resolution table for BOOK.genres
+--  A book can belong to multiple genres (e.g. "Mystery", "Thriller")
+-- ============================================================
+--
+-- ============================================================
+--  ENTITY 8 — BRANCH
+--  Attributes: branch_id (PK), branch_name, address, phone
+--  (Defined before BOOK_COPY and STAFF which reference it)
+-- ============================================================
+--
+-- ============================================================
+--  ENTITY 6 — BOOK_COPY
+--  Attributes: copy_id (PK), book_id (FK), branch_id (FK), condition
+--  Relationship R4 (partial): BOOK_COPY references BOOK_COPY via LOAN_ITEM
+--  Relationship R5: BOOK_COPY held at BRANCH (N:1, BOOK_COPY total, BRANCH partial)
+-- ============================================================
+--
+-- ============================================================
+--  ENTITY 9 — STAFF
+--  Attributes: staff_id (PK), branch_id (FK), staff_name, role
+--  Relationship R6: BRANCH employs STAFF (1:N, BRANCH total, STAFF total)
+-- ============================================================
+--
+-- ============================================================
+--  ENTITY 1 — MEMBER
+--  Attributes: member_id (PK), full_name, date_of_birth, email
+--  Derived attribute: age (computed from date_of_birth — not stored)
+-- ============================================================
+--
+-- ============================================================
+--  ENTITY 2 — MEMBERSHIP
+--  Attributes: membership_id (PK), member_id (FK), start_date, expiry_date
+--  Relationship R1: MEMBER holds MEMBERSHIP (1:1, both total participation)
+-- ============================================================
+--
+-- ============================================================
+--  ENTITY 3 — LOAN
+--  Attributes: loan_id (PK), member_id (FK), loan_date, due_date
+--  Relationship R2: MEMBER makes LOAN (1:N, MEMBER partial, LOAN total)
+-- ============================================================
+--
+-- ============================================================
+--  ENTITY 4 — LOAN_ITEM   *** WEAK ENTITY ***
+--  Identifying owner: LOAN (via loan_id)
+--  Partial key: book_copy_id
+--  Full PK: composite (loan_id, book_copy_id)
+--  Attributes: loan_id (FK, partial key), book_copy_id (FK, partial key),
+--              return_date, status
+--  Relationship R3: LOAN contains LOAN_ITEM (1:N, both total participation)
+--  Relationship R4: LOAN_ITEM references BOOK_COPY (N:1, LOAN_ITEM total)
+-- ============================================================
+--
+-- ============================================================
+--  SAMPLE QUERIES
+-- ============================================================
+--
+-- Q1: Derived attribute — compute member age at query time
+-- SELECT member_id, full_name,
+--        TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) AS age
+-- FROM MEMBER;
+--
+-- Q2: Active loans with member, book title, and due date
+-- SELECT m.full_name, b.title, l.due_date, li.status
+-- FROM LOAN_ITEM li
+-- JOIN LOAN       l  ON li.loan_id      = l.loan_id
+-- JOIN MEMBER     m  ON l.member_id     = m.member_id
+-- JOIN BOOK_COPY  bc ON li.book_copy_id = bc.copy_id
+-- JOIN BOOK       b  ON bc.book_id      = b.book_id
+-- WHERE li.status = 'On Loan';
+--
+-- Q3: All books with their genres (multivalued attribute)
+-- SELECT b.title, GROUP_CONCAT(bg.genre ORDER BY bg.genre SEPARATOR ', ') AS genres
+-- FROM BOOK b
+-- LEFT JOIN BOOK_GENRES bg ON b.book_id = bg.book_id
+-- GROUP BY b.book_id;
+--
+-- Q4: All copies available at a specific branch
+-- SELECT br.branch_name, b.title, bc.condition
+-- FROM BOOK_COPY bc
+-- JOIN BOOK   b  ON bc.book_id   = b.book_id
+-- JOIN BRANCH br ON bc.branch_id = br.branch_id
+-- WHERE br.branch_id = 1;
+--
+-- Q5: Members with expired memberships
+-- SELECT m.full_name, ms.expiry_date
+-- FROM MEMBER m
+-- JOIN MEMBERSHIP ms ON m.member_id = ms.member_id
+-- WHERE ms.expiry_date < CURDATE();
+--
+-- ============================================================
+--  END OF SCRIPT
+-- ============================================================
