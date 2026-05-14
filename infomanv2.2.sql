@@ -139,7 +139,7 @@ CREATE TABLE loan (
         ON DELETE RESTRICT
         ON UPDATE CASCADE,
 
-    CONSTRAINT chk_loan_dates   CHECK (return_date IS NULL OR return_date >= loan_date) -- ensure due_date is after loan_date
+    CONSTRAINT chk_loan_dates   CHECK (due_date > loan_date) -- ensure due_date is after loan_date
 );
 
 CREATE TABLE loan_item (
